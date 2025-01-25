@@ -1,10 +1,25 @@
+chrome.runtime.onInstalled.addListener(()=>{
+    // chrome.tabs.create({
+    //   url : 'https://www.naver.com'
+})
+
+chrome.tabs.onCreated.addListener(()=>{
+  console.log('create')
+})
+
+chrome.tabs.onActivated.addListener(()=>{
+  console.log('activate')
+})
+
+
 chrome.tabs.onUpdated.addListener((tabId,changeInfo, tab) => {
   
-  //console.log('hello')
+  // console.log('hello')
   // 1. 'tab.url'이 존재하고, YouTube 동영상 URL인지 확인
 
-  if (changeInfo.status) {
+  if (changeInfo.status === 'complete') {
     //console.log(`Tab ${tabId} status changed to: ${changeInfo.status}`);
+    console.log('complete')
 }
 
   if (changeInfo.status ==='complete' && tab.url && tab.url.includes("youtube.com/watch")) {

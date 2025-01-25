@@ -1,3 +1,5 @@
+// "matches": ["https://*.youtube.com/*"],
+
 (() => {
     let youtubeLeftControls, youtubePlayer;
     let currentVideo = "";
@@ -14,7 +16,6 @@
         }
     });
 
-    // Popup으로 데이터 전달
     // chrome.runtime.sendMessage({ title: "hello world" }, (response) => {
     //     console.log("Response from Popup:", response);
     // });
