@@ -9,9 +9,9 @@
     },
     "content_scripts": [
       {
-        "matches": ["<all_urls>"],
-        "css" : ["contentStyle.css"],
-        "js": ["contentScript.js"]
+        "matches": ["https://*.youtube.com/*"],
+        "js": ["contentScript.js"],
+        "css" : ["contestScript.css"]
       }
     ],
     "web_accessible_resources": [
