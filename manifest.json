@@ -11,7 +11,7 @@
       {
         "matches": ["https://*.youtube.com/*"],
         "js": ["contentScript.js"],
-        "css" : ["contestScript.css"]
+        "css" : ["contentStyle.css"]
       }
     ],
     "web_accessible_resources": [

@@ -1,15 +1,15 @@
-chrome.runtime.onInstalled.addListener(()=>{
-    // chrome.tabs.create({
-    //   url : 'https://www.naver.com'
-})
+// chrome.runtime.onInstalled.addListener(()=>{
+//     chrome.tabs.create({
+//     url : 'https://www.naver.com'
+// })
 
-chrome.tabs.onCreated.addListener(()=>{
-  console.log('create')
-})
+// chrome.tabs.onCreated.addListener(()=>{
+//   console.log('create')
+// })
 
-chrome.tabs.onActivated.addListener(()=>{
-  console.log('activate')
-})
+// chrome.tabs.onActivated.addListener(()=>{
+//   console.log('activate')
+// })
 
 
 chrome.tabs.onUpdated.addListener((tabId,changeInfo, tab) => {
@@ -19,7 +19,7 @@ chrome.tabs.onUpdated.addListener((tabId,changeInfo, tab) => {
 
   if (changeInfo.status === 'complete') {
     //console.log(`Tab ${tabId} status changed to: ${changeInfo.status}`);
-    console.log('complete')
+    // console.log('complete')
 }
 
   if (changeInfo.status ==='complete' && tab.url && tab.url.includes("youtube.com/watch")) {

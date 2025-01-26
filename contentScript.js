@@ -13,6 +13,14 @@
         if (type === "NEW") {        
             currentVideo = videoId;
             newVideoLoaded();
+        }else if(type === "PLAY"){
+            console.log(value)
+            youtubePlayer.currentTime = value;
+        }else if(type === "DELETE"){
+            currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
+            chrome.storage.sync.set({[currentVideo]: JSON.stringify(currentVideoBookmarks)});
+
+            response(currentVideoBookmarks);
         }
     });
 
@@ -24,8 +32,6 @@
         const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
         currentVideoBookmarks = await fetchBookmarks();
 
-        console.log(bookmarkBtnExists);
-
         if (!bookmarkBtnExists) {
             const bookmarkBtn = document.createElement("img");
 
@@ -36,8 +42,6 @@
             youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
             youtubePlayer = document.getElementsByClassName("video-stream")[0];
 
-            console.log(youtubePlayer.currentTime);
-            
             youtubeLeftControls.append(bookmarkBtn);
             bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
         }
@@ -57,22 +61,22 @@
             time: currentTime,
             desc: "Bookmark at " + getTime(currentTime),
         };
-        
-        currentVideoBookmarks = await fetchBookmarks();
 
-        console.log(newBookmark);
+        currentVideoBookmarks = await fetchBookmarks();
 
         chrome.storage.sync.set({
             [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
         });
     }
 
-//     newVideoLoaded();
+     newVideoLoaded();
  })();
 
-const getTime = t => {
+ const getTime = (t) => {
+    // 기준 시간을 UTC 1970년 1월 1일로 설정하고 초를 밀리초로 추가
     var date = new Date(0);
-    date.setSeconds(1);
+    date.setSeconds(t);
 
-    return date.toISOString().substr(11, 0);
-}
+    // ISO 문자열에서 시간 부분 추출 (HH:MM:SS)
+    return date.toISOString().substr(11, 8);
+};

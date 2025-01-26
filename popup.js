@@ -2,7 +2,25 @@ import {getActiveTabURL} from "./utils.js"
 
 // adding a new bookmark row to the popup
 const addNewBookmark = (bookmarksElement, bookmark) => {
-    
+    const bookmarkTitleElement = document.createElement("div");
+    const newBookmarkElement = document.createElement("div");
+    const controlsElement = document.createElement("div");
+
+    bookmarkTitleElement.textContent = bookmark.desc;
+    bookmarkTitleElement.className = "bookmark-title";
+    controlsElement.className = "bookmark-controls";
+
+    newBookmarkElement.id = "bookmark-" + bookmark.time;
+    newBookmarkElement.className = "bookmark";
+    newBookmarkElement.setAttribute("timestamp",bookmark.time);
+
+    setBookmarkAttributes("play",onPlay,controlsElement);
+    setBookmarkAttributes("delete",onDelete,controlsElement);
+
+    newBookmarkElement.appendChild(bookmarkTitleElement);
+    newBookmarkElement.appendChild(controlsElement);
+
+    bookmarksElement.appendChild(newBookmarkElement);
 };
 
 const viewBookmarks = (currentBookmarks=[]) => {
@@ -20,11 +38,39 @@ const viewBookmarks = (currentBookmarks=[]) => {
     }
 };
 
-const onPlay = e => {};
+const onPlay = async e => {
+    
+    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+    const activeTab = await getActiveTabURL();
 
-const onDelete = e => {};
+    chrome.tabs.sendMessage(activeTab.id,{
+        type : "PLAY",
+        value : bookmarkTime
+    })
+};
 
-const setBookmarkAttributes =  () => {};
+const onDelete = async e => {
+    const activateTab = await getActiveTabURL();
+    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+    const bookmarkElementToDelete = document.getElementById("bookmark-" + bookmarkTime)
+
+    bookmarkElementToDelete.parentNode.removeChild(bookmarkElementToDelete)
+
+    chrome.tabs.sendMessage(activeTab.id,{
+        type : "DELETE",
+        value : bookmarkTime
+    },viewBookmarks)
+};
+
+const setBookmarkAttributes = (src, eventListener, controlPanelElement) => {
+    const controlElement = document.createElement("img");
+
+    controlElement.src = "assets/" + src + ".png";
+    controlElement.title = src;
+    controlElement.addEventListener("click",eventListener);
+    controlPanelElement.appendChild(controlElement);
+
+};
 
 
 // DOMContentLoaded 이벤트 리스너: HTML 문서가 완전히 로드되었을 때 실행됩니다.
@@ -32,7 +78,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 현재 활성 탭의 URL 정보를 가져옵니다.
     const activeTab = await getActiveTabURL(); // getActiveTabURL 함수는 비동기로 활성 탭 정보를 반환해야 합니다.
-    console.log(activeTab.url)
 
     // URL에서 쿼리 파라미터를 분리합니다.
     const queryParameters = activeTab.url.split("?")[1]; // "?" 이후의 쿼리 파라미터 부분을 가져옵니다.
@@ -44,11 +89,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // URL이 유튜브 비디오 페이지인지 확인하고, 비디오 ID가 존재할 경우 실행합니다.
     if (activeTab.url.includes("youtube.com/watch") && currentVideo) {
-    
-        // Chrome의 storage API를 사용하여 현재 비디오와 관련된 북마크 데이터를 가져옵니다.
+
+       // Chrome의 storage API를 사용하여 현재 비디오와 관련된 북마크 데이터를 가져옵니다.
         chrome.storage.sync.get([currentVideo], (data) => {
             // 비디오 ID에 해당하는 북마크 데이터를 JSON으로 파싱하거나 기본값으로 빈 배열을 설정합니다.
             const currentVideoBookmarks = data[currentVideo] ? JSON.parse(data[currentVideo]) : [];
+
+            console.log(currentVideoBookmarks)
             //viewbookmark
             viewBookmarks(currentVideoBookmarks)
         });
@@ -67,4 +114,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // 응답 메시지
       sendResponse({ status: "Title received!" });
     }
-  });
+});
+
+  
